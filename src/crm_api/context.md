@@ -11,12 +11,13 @@ Fetch client data from Zoho CRM API for matching against grant programs.
 - Data needed for matching against program eligibility criteria
 
 ## API Credentials
-**IMPORTANT**: Store these in `.env` file, never commit to git
+**IMPORTANT**: Store credentials in `.env` file, never commit to git
 
-```
-Client ID: 1000.GMZK1W408HHUU9OI72KS7196K8M3DJ
-Client Secret: 2c3873aefd7526b41ebc9d0699f0bf8535c17b9e1e
-```
+Obtain credentials from Zoho API Console (https://api-console.zoho.com/)
+- Client ID: `ZOHO_CLIENT_ID` (from .env)
+- Client Secret: `ZOHO_CLIENT_SECRET` (from .env)
+
+**⚠️ SECURITY**: Credentials must NEVER be committed to version control
 
 ## Implementation Details
 

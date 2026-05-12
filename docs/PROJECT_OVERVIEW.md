@@ -183,14 +183,17 @@ Is custom research/inference worth it for future programs?
 ## API Credentials
 
 ### Zoho CRM
-```
-Client ID: 1000.GMZK1W408HHUU9OI72KS7196K8M3DJ
-Client Secret: 2c3873aefd7526b41ebc9d0699f0bf8535c17b9e1e
-```
-**⚠️ Store in `.env` file, never commit to git**
+Obtain credentials from Zoho API Console: https://api-console.zoho.com/
+
+Store in `.env` file as:
+- `ZOHO_CLIENT_ID`
+- `ZOHO_CLIENT_SECRET`
+
+**⚠️ CRITICAL**: Credentials must NEVER be committed to version control
 
 ### Claude API
 TBD - needed for PDF parsing
+Store as `ANTHROPIC_API_KEY` in `.env`
 
 ---
 
