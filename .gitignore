@@ -87,6 +87,8 @@ secrets/
 credentials/
 *.key
 *.pem
+.tokens.json
+get_tokens.py
 
 # Claude Code
 .claude/

@@ -1,0 +1,31 @@
+# Zoho CRM Integration Dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Future: PDF Processing
+# pypdf2>=3.0.0
+# pdfplumber>=0.10.0
+
+# Future: PDF Generation
+# reportlab>=4.0.0
+# weasyprint>=59.0
+
+# Future: Data Analysis
+# pandas>=2.0.0
+# numpy>=1.24.0
+
+# Future: API Framework
+# fastapi>=0.100.0
+# uvicorn>=0.23.0
+# pydantic>=2.0.0
+
+# Future: Scheduler
+# apscheduler>=3.10.0
+
+# Future: Email
+# sendgrid>=6.10.0
+
+# Development
+# pytest>=7.4.0
+# black>=23.7.0
+# flake8>=6.1.0
