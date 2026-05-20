@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import math
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional, Tuple
 
-from reportlab.lib.utils import simpleSplit
+from reportlab.lib.utils import ImageReader, simpleSplit
 from reportlab.pdfgen import canvas
 
 from src.pdf_generator.models import MatchReport, MatchStrength, MatchedContact
@@ -62,20 +63,41 @@ class PDFRenderer:
         if self.pm.draw_footers and self.pm.total_pages > 0:
             self.draw_footer(self.pm.page_num, self.pm.total_pages)
 
+    def _draw_prism_logo(self, x: float, y: float) -> float:
+        """Draw Prism wordmark; return horizontal width consumed."""
+        c = self.c
+        logo_h = s.LOGO_HEIGHT
+        path = Path(s.PRISM_LOGO_PATH)
+        if path.is_file():
+            reader = ImageReader(str(path))
+            iw, ih = reader.getSize()
+            logo_w = logo_h * (iw / ih)
+            c.drawImage(
+                reader,
+                x,
+                self.y_rl(y + logo_h),
+                width=logo_w,
+                height=logo_h,
+                mask="auto",
+                preserveAspectRatio=True,
+            )
+            return logo_w
+        # Fallback if asset missing
+        c.setFillColor(s.COLOR_ACCENT)
+        c.roundRect(x, self.y_rl(y + logo_h), logo_h, logo_h, 6, fill=1, stroke=0)
+        c.setFillColor(s.COLOR_WHITE)
+        c.setFont(s.FONT_BOLD, 13)
+        c.drawCentredString(x + logo_h / 2, self.y_rl(y + logo_h / 2 + 4), "P")
+        return logo_h
+
     def draw_header(self) -> float:
         c = self.c
         report = self.report
         y = s.MARGIN_T
 
-        logo = 30
         logo_x = s.MARGIN_L
-        c.setFillColor(s.COLOR_ACCENT)
-        c.roundRect(logo_x, self.y_rl(y + logo), logo, logo, 6, fill=1, stroke=0)
-        c.setFillColor(s.COLOR_WHITE)
-        c.setFont(s.FONT_BOLD, 13)
-        c.drawCentredString(logo_x + logo / 2, self.y_rl(y + logo / 2 + 4), "P")
-
-        text_x = logo_x + logo + 10
+        logo_w = self._draw_prism_logo(logo_x, y)
+        text_x = logo_x + logo_w + s.LOGO_GAP
         c.setFillColor(s.COLOR_TEXT_PRIMARY)
         c.setFont(s.FONT_BOLD, s.SIZE_BRAND_NAME)
         c.drawString(text_x, self.y_rl(y + 14), "Prism Digital Labs")
@@ -88,7 +110,7 @@ class PDFRenderer:
             f"{format_run_date(report.run_date)} · "
             f"Page {self.pm.page_num} of {self.pm.total_pages}"
         )
-        c.setFillColor(s.COLOR_ACCENT)
+        c.setFillColor(s.COLOR_TEXT_PRIMARY)
         c.setFont(s.FONT_BOLD, s.SIZE_EYEBROW)
         c.drawRightString(right_x, self.y_rl(y + 10), "ELIGIBLE CLIENTS — PROGRAM MATCH")
         c.setFillColor(s.COLOR_TEXT_PRIMARY)
@@ -121,7 +143,7 @@ class PDFRenderer:
         c.drawRightString(s.MARGIN_L + s.CONTENT_W, self.y_rl(y + 12), right)
 
         rule_y = y + 22
-        c.setStrokeColor(s.COLOR_ACCENT)
+        c.setStrokeColor(s.COLOR_BORDER)
         c.setLineWidth(1.5)
         c.line(s.MARGIN_L, self.y_rl(rule_y), s.MARGIN_L + s.CONTENT_W, self.y_rl(rule_y))
         return rule_y + 14
@@ -160,6 +182,7 @@ class PDFRenderer:
 
     def draw_section_label(self, label: str, y: float) -> float:
         c = self.c
+        c.setStrokeColor(s.COLOR_BORDER)
         text = label.upper()
         c.setFillColor(s.COLOR_TEXT_MUTED)
         c.setFont(s.FONT_BOLD, s.SIZE_SEC_LABEL)
@@ -173,7 +196,7 @@ class PDFRenderer:
             s.MARGIN_L + s.CONTENT_W,
             self.y_rl(y + 6),
         )
-        return y + s.GAP_AFTER_SECTION_LABEL
+        return y + s.SECTION_LABEL_HEIGHT + s.GAP_AFTER_SECTION_LABEL
 
     def draw_footer(self, page_num: int, total_pages: int) -> None:
         c = self.c
@@ -350,7 +373,7 @@ class PDFRenderer:
 
     def draw_detail_view(self) -> None:
         """Strong and medium detail cards only — weak contacts excluded."""
-        self.pm.y += s.SECTION_GAP
+        self.pm.y += 24
         self.pm.y = self.draw_section_label("Detail view — strong & medium matches", self.pm.y)
 
         for section_name, contacts in (
@@ -361,6 +384,9 @@ class PDFRenderer:
                 continue
             if self._needs_break(self.pm.y, 80):
                 self.pm.new_page(condensed=True)
+                self.pm.y += 20
+            else:
+                self.pm.y += 20
             self.pm.y = self.draw_section_label(section_name, self.pm.y)
             for contact in contacts:
                 card_h = self.estimate_card_height(contact)

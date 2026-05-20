@@ -1,8 +1,15 @@
 """Design system constants — single source of truth for PDF rendering."""
 
+from pathlib import Path
+
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+PRISM_LOGO_PATH = _REPO_ROOT / "assets" / "branding" / "PrismLogo3.png"
+LOGO_HEIGHT = 32
+LOGO_GAP = 10
 
 # Fonts — ReportLab built-ins only, no external files
 FONT_REGULAR = "Helvetica"
@@ -19,8 +26,8 @@ COLOR_TEXT_PRIMARY = HexColor("#1A1A1A")
 COLOR_TEXT_MUTED = HexColor("#6B7280")
 
 # Surfaces
-COLOR_SURFACE = HexColor("#F9FAFB")
-COLOR_BORDER = HexColor("#E5E7EB")
+COLOR_SURFACE = HexColor("#F3F4F6")
+COLOR_BORDER = HexColor("#D1D5DB")
 
 # Match strength badges — fill + text pairs
 COLOR_STRONG_FILL = HexColor("#EEF2FF")
@@ -83,6 +90,7 @@ BADGE_COL_W = 48
 RANK_COL_W = 20
 GAP_AFTER_HEADER_RULE = 16
 GAP_AFTER_SUMMARY = 16
-GAP_AFTER_SECTION_LABEL = 8
+SECTION_LABEL_HEIGHT = 20
+GAP_AFTER_SECTION_LABEL = 16
 CARD_GAP = 10
 SAFETY_MARGIN = 10
